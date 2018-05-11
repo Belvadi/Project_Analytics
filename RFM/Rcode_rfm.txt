@@ -1,0 +1,24 @@
+eretail_nov11 <- subset(eretail_nov11, Quantity > 0, select = c(1:7))
+eretail_nov11$Amount <- eretail_nov11$Quantity * eretail_nov11$UnitPrice
+eretail_nov11$DOP<- as.Date(eretail_nov11$DOP, "%d-%m-%Y")
+startDate<-min(eretail_nov11$DOP)
+endDate="2011-11-30"
+RFM <- subset(eretail_nov11, DOP > startDate & DOP < endDate )
+length(unique(RFM$CustomerID))
+RFM2<-ddply(RFM, .(CustomerID),summarize,sumAmount=sum(Amount),sumQuantity=sum(Quantity),Monetary=max(Amount),Frequency=length(unique(DOP)))
+RFM3<-ddply(RFM, .(CustomerID,Country),summarize,First_date=min(as.Date(DOP)),Last_date=max(as.Date(DOP)))
+RFM3$Recency<-as.numeric(difftime(endDate,RFM3$Last_date,units="days"))
+RFM1 <- merge(RFM2,RFM3, by = "CustomerID")
+
+M = RFM1$Monetary
+M<-rank(M)/length(M)
+RFM1$M = ceiling(M*5)
+Fq = RFM1$Frequency
+Fq<-rank(Fq)/length(Fq)
+RFM1$Fq = ceiling(Fq*5)
+R = RFM1$Recency
+R<-rank(R)/length(R)
+RFM1$R = ceiling(R*5)
+
+
+
