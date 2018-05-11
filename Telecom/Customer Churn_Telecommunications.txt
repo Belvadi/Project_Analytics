@@ -1,0 +1,37 @@
+Feature Engineering
+
+Feature selection being done based on information value. Following R code was used to generate the information value for each of the variable.
+Variables with information between 0.1 and o.5 are generally the good predictors.
+Libraries-“devtools”,”woe”,”tomasgreif”
+iv.mult(data,”response,”TRUE”)
+iv.plot.summary(iv.mult(data,”response,”TRUE”))
+
+Weight of Evidence (WoE) was calculated for each of the independent variables at all levels.
+options(digits=2)
+iv.mult(data,"gb",vars=c("var1","var2",……,”varn”))
+
+
+Data Partitioning
+
+#Data was divided as training and validation sets in the ratio of 70:30. The following R code was used for data partitioning.
+sub<-sample(nrow(data),floor(nrow(data)*.70))
+training<-data[sub,]
+validation<-data[-sub,]
+
+#Model Development
+
+#A full model (all variables included) was built to start with. Post full model development, stepwise algorithm was used to arrive at the most parsimonious model. Akaike Information Criteria (AIC) was used to select the model and the model with the lowest AIC value will qualify as the final model. The R codes for the full model and the stepwise model are given below.
+logit_fullmodel<-glm(Churn~gender+SeniorCitizen+Partner+Dependents+tenure_cat+PhoneService+MultipleLines+InternetService+OnlineSecurity+OnlineBackup+DeviceProtection+TechSupport+StreamingTV+StreamingMovies+Contract+PaperlessBilling+PaymentMethod+MonthlyCharges_cat+TotalCharges_cat,data=train,family="binomial")
+
+logit_reducedmodel<-stepAIC(logit_fullmodel,direction="backward")
+using “MASS” library
+
+#The final model code is as below:
+Logit_finalmodel<-glm(formula = Churn ~ SeniorCitizen + Dependents + tenure_cat +MultipleLines + InternetService + OnlineSecurity + OnlineBackup + TechSupport + StreamingTV + StreamingMovies + Contract + PaperlessBilling + PaymentMethod + TotalCharges_cat, family = "binomial", data = train)
+
+#Validate Model
+
+#The model thus developed was validated and the predictions were doe on the test data. Post predictions, the diagnostic measures like Area Under the Curve (AUC) and KS measures were computed. The details are as below. The AUC was 83.74% which indicated the goodness of fit of the model.
+The area under the curve was computed using pROC and ROCR packages.
+rocobj<-roc(probabilities_predicted_test$Churn,probabilities_predicted_test$predict_testdata)
+confusionMatrix(predicted,class)
