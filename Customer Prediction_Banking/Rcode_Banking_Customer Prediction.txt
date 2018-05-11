@@ -1,0 +1,45 @@
+Loading the file
+data<-read.csv(file.choose())
+Data Exploration
+str(data)
+names(data)
+Converting "yes" and "no" to 1 and 2 factors
+data$y<-ifelse(data$y=="1",1,2)
+Convert the required variables to factors
+data$y<-as.factor(data1$y)
+data$day<-as.factor(data$day)
+data$month<-as.factor(data$month)
+Randomize the data
+datamixed<-data[order(runif(45211))]
+where 45211 are the number of rows/observations in the data
+Removing unwanted features
+datamixed<-datamixed[-c(14,16,18)]
+Create training and testing datasets
+train_Smote <- SMOTE(data$y~., training, k=5, per.over=100, perc.under=100)
+use SMOTE-Supersampling Rare events for unbalanced samples. This is the best Synthetic Minority Oversampling Technique to handle class imbalancy in binary classification
+### diagnostic check after sampling
+table(train_Smote$y)
+prop.table(table(train_Smote$y))
+train_smote$y=as.factor(train_smote$y)
+Convert the required variables to factors
+data$y<-as.factor(data1$y)
+data$day<-as.factor(data$day)
+data$month<-as.factor(data$month)
+Develop C5.0 model
+fit_c50_smote<-C5.0(y~.,data=training_Smote)
+fit_c50_smote<-C5.0(y~.,data=train_smote,rule=TRUE,trials=100)
+predict_c50_smote_raw<-predict(fit_c50_smote,testing[-c(1,2)])
+confusionMatrix(predict_c50_smote_raw,testing$y)
+Predict the model
+predict_forest_raw<-predict(fit_forest_smote,test[-1],type="prob")
+predict_forest_class<-predict(fit_forest_smote,test[-1],type="class")
+Create Confusion matrix
+confusionMatrix(predict_forest_class,test$y)
+Draw ROC and Calculate AUC
+rocobj_forest<-roc(roc_forest$y,roc_forest$prob)
+plot(rocobj_forest)
+rocobj_forest$auc
+Develop RandomForest model
+fit_forest_smote<-randomForest(y~.,data=training_Smote,na.action=na.roughfix,importance=TRUE)
+NeuralNet
+fit_nnet<-nnet(y~.,data=train_smote,size=7)’
