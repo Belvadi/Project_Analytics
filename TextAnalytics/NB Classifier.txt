@@ -1,0 +1,90 @@
+# Load Required Libraries
+
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cross_validation import train_test_split
+from sklearn import naive_bayes
+from sklearn.metrics import roc_auc_score
+import numpy as np
+import nltk
+from nltk.corpus import stopwords
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn import metrics
+from sklearn.metrics import roc_curve,auc,recall_score,precision_score,accuracy_score,f1_score
+from sklearn.metrics import confusion_matrix,average_precision_score,recall_score
+import seaborn as sns
+
+# Load CSV file
+
+df=pd.read_csv("D:\\Nagendra\Projects\\Text Analytics\\YouTube\\PythonDataset.csv")
+
+# Explore data
+
+df.head(10)
+df.tail(10)
+
+#Pre-process
+le=preprocessing.LabelEncoder()
+le.fit(df['CLASS'])
+list(le.classes_)
+dfn=le.transform(df['CLASS'])
+df['Y']=dfn
+y=df['Y']
+y=df['Y']
+x=vectorizer.fit_transform(df.CONTENT)
+
+# Create vectorizer
+
+stopset=set(stopwords.words("english"))
+vectorizer=TfidfVectorizer(use_idf=True,lowercase=True,strip_accents='ascii',stop_words=stopset)
+from sklearn import preprocessing
+
+# Test Train Split 
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=1)
+
+# Train NB classifier
+clf=naive_bayes.MultinomialNB()
+clf.fit(x_train,y_train)
+
+# Test model accuracy through ROC
+roc_auc_score(y_test,clf.predict_proba(x_test)[:,1])
+
+# Model Diagnostics
+
+lasses=clf.predict(x_test)
+print(classes.size)
+print('Positive Class in Test Data:',y_test[y_test==1].shape[0])
+print('Negative Class in Test Data:',y_test[y_test==0].shape[0])
+
+# precision and recall
+print('Accuracy Score')
+print(metrics.accuracy_score(y_test,classes))
+print('Precision/Recall Metrics')
+print(metrics.classification_report(y_test,classes))
+print('AUC')
+auc=metrics.roc_auc_score(y_test,classes)
+auc
+
+# roc 
+fpr,tpr,th=roc_curve(y_test,classes)
+roc_auc=metrics.auc(fpr,tpr)
+import matplotlib.pyplot as plt
+plt.title('ROCR CHART')
+plt.plot(fpr,tpr,'b',label='AUC=%0.2f'% roc_auc)
+plt.legend(loc='lower right')
+plt.plot([0,1],[0,1],'o--')
+plt.xlim([0,1])
+plt.ylim([0,1])
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
+plt.show()
+
+# confusion matrix
+print('Confusion Matrix')
+cf=metrics.confusion_matrix(y_test,classes)
+lbl1=['Predicted 0','Predicted 1']
+lbl2=['True 0','True 1']
+sns.heatmap(cf,annot=True,cmap='Greens',fmt='d',xticklabels=lbl1,yticklabels=lbl2)
