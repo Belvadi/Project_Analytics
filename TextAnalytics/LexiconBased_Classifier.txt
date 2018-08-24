@@ -1,0 +1,62 @@
+#Load required libraries
+import numpy as np
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.classify import SklearnClassifier
+#from sklearn.model_selection import train_test_split
+
+#Load data
+df = pd.read_csv("D:\\Nagendra\\Projects\\Text Analytics\\YouTube\\PythonDataset.csv")
+
+#Explore data
+df.head()
+df.tail()
+df.count()
+
+#Convert text to list
+data = df['CONTENT'].tolist()
+
+#Create word list for each token
+word_list =[]
+for record in data:
+    #print(record)
+    words = []
+    tokens = record.split()
+    #print(tokens)
+    for token in tokens:
+        words.append(token.lower())
+    word_list.append(words)
+word_list
+
+#Import Lexicon file
+lex_file = open("D:\\Nagendra\\Python Codes\\Text Analytics\\AFINN-111.csv")
+lexicons = {}
+records = lex_file.readlines()
+type(records)
+records[0]
+for record in records:
+    #print(record)
+    lexicons[record.rstrip('\n').split(",")[0]] = int(record.rstrip('\n').split(",")[1])
+
+# Determine polarity
+strength = []
+for tweet in word_list:
+    #print(tweet)
+    score = 0
+    for word in tweet:
+        if word in (lexicons):
+            score = score + lexicons[word]
+    strength.append(score)
+for index in range(n):
+    print(word_list[index], strength[index])
+
+#Prepare df for final analysis
+orig_class = df['CONTENT']
+lex_df = pd.DataFrame({'Sentiment': strength, 'tweet': word_list, 'Orig_Class': orig_class})
+lex_df.head(5)
+lex_df['Sentiment_New'] = np.where(lex_df['Sentiment']==0,'ham',(np.where(lex_df['Sentiment']<0,'ham','spam')))
+lex_df.head(10)
+
+#CrossTabulation/Confusion Matrix
+cm=pd.crosstab(df['CLASS'],lex_df['Sentiment_New'],margins=True)
