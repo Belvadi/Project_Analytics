@@ -1,0 +1,128 @@
+R Code for ARIMA
+=================
+Install packages
+
+install.packages("forecast")
+install.packages("tseries")
+install.packages("lmtest")
+install.packages("strucchange")
+
+Import R dataset
+data<-read.csv(file.choose())
+str(data)
+names(data)
+
+Generate time series plot
+plot.ts(data$series)
+
+Check for stationarity
+adf.test(data$series)
+
+Run automated ARIMA to find (p,d,q) and (P,D,Q)
+
+auto.arima(vc_train$Month7,trace=TRUE,test="kpss",ic="bic")
+arima_model<-Arima(data$series,order=c(p,d,q),seasonal=c(P,D,Q)
+arima_forecast=forecast(arima_model,h=n), n=2,3,4,5,.......
+Acf(errors)
+Pacf(erros)
+box.test(errors,lag=h,type="Ljung")
+
+R Code Holt-Winters
+===================
+
+library("forecast")
+  
+Data<-read.csv(file.choose())
+
+Data
+
+logData <- log(Data)
+
+### Model parameters:
+
+Forecastdata <- HoltWinters(Data,gamma=FALSE)
+
+or
+
+Forecastdata<- HoltWinters(Data, beta=FALSE, gamma=FALSE, l.start=51)
+
+
+Forecastdata
+
+---------------------
+Output:
+
+Holt-Winters exponential smoothing with trend and without seasonal component.
+
+Call:
+HoltWinters(x = Data, gamma = FALSE)
+
+Smoothing parameters:
+ alpha: 0.06326771
+ beta : 1
+ gamma: FALSE
+
+Coefficients:
+       [,1]
+a 63.532526
+b  4.731301
+
+-------------------------------
+
+Forecastdata$SSE
+
+plot(Forecastdata)
+
+### forecasting using Holtswinters###
+
+finalforecast <- forecast.HoltWinters(Forecastdata, h=5)
+
+Forecast
+------------------------------------
+###Output - next 5 months forecast###
+
+ Point Forecast    Lo 80    Hi 80     Lo 95    Hi 95
+13       68.26383 29.00540 107.5223  8.223242 128.3044
+14       72.99513 33.42366 112.5666 12.475790 133.5145
+15       77.72643 37.45952 117.9933 16.143504 139.3094
+16       82.45773 40.98326 123.9322 19.028004 145.8875
+17       87.18903 43.89513 130.4829 20.976721 153.4013
+------------------------------------------------
+
+plot.forecast(Forecast)
+
+R Code for MLR and GAM
+======================
+
+mlr_crime<-read.csv(file.choose())
+names(mlr_crime)
+train_mlr_crime<-mlr_crime[1:1300,]
+test_mlr_crime<-mlr_crime[1301:1500,]
+View(mlr_crime)
+test_mlr_crime<-mlr_crime[1301:1500,]
+mlr_crime<-read.csv(file.choose())
+names(mlr_crime)
+test_mlr_crime<-mlr_crime[1301:1500,]
+test_mlr_crime<-test_mlr_crime[-1]
+test_mlr_crime
+names(train_mlr_crime) 
+train_mlr_crime<-train_mlr_crime[-8]
+names(train_mlr_crime)
+mlr_model_crime_train<-lm(X2015.07~.,data=train_mlr_crime)
+summary(mlr_model_crime_train)
+mlr_predict_crime_test<-predict(mlr_model_crime_train,newdata=test_mlr_crime)
+mlr_predict_crime_test
+mlr_prediction_test_crime<-cbind(test_mlr_crime,mlr_predict_crime_test)
+write.csv(mlr_prediction_test_crime,"D://Nagendra//Projects//Crime Data Analysis For IISC//mlrpredictions.csv")
+mlr_model_crime_train
+summary(mlr_model_crime_train)
+library(metrics)
+Metrics::mape(train_mlr_crime$X2015.07,mlr_prediction_test_crime$mlr_predict_crime_test)
+mlr_crime_train_validation<-mlr_crime[1301:1500,]
+Metrics::mape(mlr_crime_train_validation$X2015.07,mlr_prediction_test_crime$mlr_predict_crime_test)
+library(gam)
+gam_model_crime_train<-gam(X2015.07~.,data=train_mlr_crime)
+summary(gam_model_crime_train)
+metrics(gam_model_crime_train)
+gam_predictions_crimes_testdata<-data.frame(mlr_crime_train_validation,gam_prediction_crime_test)
+write.csv(gam_predictions_crimes_testdata,"D:\\Nagendra\\Projects\\Crime Data Analysis For IISC\\gam_predictions
